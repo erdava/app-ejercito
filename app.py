@@ -30,7 +30,7 @@ if 'config_done' not in st.session_state:
 # 2. ESTILO DEFINITIVO (Fondo adaptable y letras visibles)
 st.markdown(f"""
     <style>
-    /* 1. FONDO ESTRUCTURAL */
+    /* 1. FONDO ESTRUCTURAL ADAPTABLE */
     .stApp {{ background: none !important; }}
     .stApp::before {{
         content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
@@ -39,27 +39,25 @@ st.markdown(f"""
         background-size: cover !important; background-position: center !important;
     }}
 
-    /* 2. TÍTULO PRINCIPAL (ROJO Y AMARILLO COMO ANTES) */
+    /* 2. TÍTULO CLÁSICO (AMARILLO CON SOMBRA ROJA) */
     .titulo-top-gun, h1 {{
-        color: #ff0000 !important; /* Rojo */
+        color: #F1BF00 !important; /* Amarillo Bandera */
         text-align: center !important;
         font-weight: 900 !important;
         text-transform: uppercase !important;
-        text-shadow: 2px 2px 0px #ffcc00, 4px 4px 0px #000000 !important; /* Sombra amarilla */
-        -webkit-text-fill-color: #ff0000 !important;
+        /* Sombra roja potente para que resalte */
+        text-shadow: 3px 3px 0px #AA151B, 5px 5px 0px #000000 !important;
+        -webkit-text-fill-color: #F1BF00 !important;
     }}
 
     /* 3. BLINDAJE DE DESPLEGABLES (SEXO Y EDAD) */
-    /* Forzamos que el contenedor sea blanco */
     div[data-baseweb="select"], .stSelectbox div {{
         background-color: white !important;
-        color: black !important;
     }}
     
-    /* Forzamos que el texto dentro del desplegable sea negro */
-    div[data-testid="stMarkdownContainer"] p, 
     div[data-baseweb="select"] span, 
-    div[data-baseweb="select"] div {{
+    div[data-baseweb="select"] div,
+    div[data-testid="stMarkdownContainer"] p {{
         color: black !important;
         -webkit-text-fill-color: black !important;
     }}
@@ -71,13 +69,13 @@ st.markdown(f"""
         border-radius: 15px !important;
     }}
     
-    /* Texto dentro de las tarjetas siempre negro */
+    /* Forzamos negro en todo el contenido de las tarjetas */
     div[data-testid="stExpander"] * {{
         color: black !important;
         -webkit-text-fill-color: black !important;
     }}
 
-    /* 5. INPUTS DE NÚMEROS (FLEXIONES, ETC) */
+    /* 5. INPUTS DE NÚMEROS */
     input {{
         background-color: white !important;
         color: black !important;
@@ -87,7 +85,6 @@ st.markdown(f"""
     /* 6. BOTONES */
     .stButton button {{
         background-color: #3B441E !important;
-        color: white !important;
         border: none !important;
     }}
     .stButton button p {{
@@ -95,7 +92,7 @@ st.markdown(f"""
         -webkit-text-fill-color: white !important;
     }}
 
-    /* 7. QUITAR MENÚS Y PONER BANDERA */
+    /* 7. BANDERA Y LIMPIEZA */
     header {{ visibility: hidden !important; }}
     [data-testid="stSidebar"] {{ display: none !important; }}
     
