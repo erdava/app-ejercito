@@ -37,13 +37,16 @@ st.markdown(f"""
     .stApp::before {{
         content: "";
         position: fixed;
-        top: 0; left: 0; width: 100vw; height: 100vh;
+        top: 0; left: 0; 
+        width: 100%; height: 100%;
         z-index: -1;
         background: 
-            linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+            linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
             url("data:image/jpeg;base64,{bin_str}");
-        background-size: cover !important;
-        background-position: center !important;
+        background-size: cover !important; /* Estira la foto para que siempre llene la pantalla */
+        background-position: center center !important; /* Centra el motivo militar */
+        background-repeat: no-repeat !important;
+        background-attachment: fixed;
     }}
 
     /* CAJAS BLANCAS BLINDADAS (Anti modo noche) */
