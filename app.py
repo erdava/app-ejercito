@@ -20,51 +20,63 @@ st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout
 # 2. EL AJUSTE PARA MÓVIL (Copia y pega esto aquí)
 st.markdown("""
 <style>
-    /* Arreglo para que los títulos de los botones no se corten */
-    div[data-testid="stExpander"] summary p {
-        font-size: clamp(14px, 4vw, 20px) !important; /* Tamaño adaptable */
+    /* 1. EVITAR CORTES DE PALABRAS EN TÍTULOS Y BOTONES */
+    div[data-testid="stExpander"] summary p, 
+    .stButton button, 
+    h1, h2, h3, label {
+        hyphens: none !important;
+        word-break: keep-all !important;
+        overflow-wrap: normal !important;
         white-space: normal !important;
-        line-height: 1.2 !important;
+        text-wrap: balance !important;
+    }
+
+    /* 2. AJUSTE DE TÍTULOS DE LOS EXPANDERS (Los que se cortaban) */
+    div[data-testid="stExpander"] summary p {
+        font-size: clamp(13px, 3.8vw, 18px) !important; 
+        line-height: 1.1 !important;
         font-weight: bold !important;
         color: #3B441E !important;
+        text-align: left !important;
     }
-    /* Ajuste para los botones de "Gestión de..." para que quepa el texto */
-    .stElementContainer button {
+
+    /* 3. BOTONES MÁS ALTOS Y LEGIBLES EN MÓVIL */
+    .stButton button {
+        width: 100% !important;
+        min-height: 55px !important;
         height: auto !important;
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
+        padding: 10px 5px !important;
+        font-weight: bold !important;
     }
-    
-    /* Forzar que el selector sea legible */
+
+    /* 4. SELECTORES (GÉNERO Y EDAD) */
     .stSelectbox label p {
         color: #3B441E !important;
         font-weight: bold !important;
     }
-    
-    /* Dar más espacio a los botones y textos */
-    .stButton button {
-        width: 100% !important; /* Que el botón ocupe todo el ancho para que sea fácil dar con el dedo */
-    }
-    /* Si la pantalla es pequeña (móvil) */
+
+    /* 5. AJUSTES ESPECÍFICOS PARA MÓVIL */
     @media (max-width: 800px) {
         .titulo-top-gun, h1 {
-            font-size: 45px !important; /* Baja de 120px a 45px en móvil */
-            white-space: normal !important; /* Permite que el texto baje de línea si es necesario */
+            font-size: 38px !important; 
+            text-align: center !important;
+            line-height: 1 !important;
+        }
+        
+        /* Bandera y título en vertical en móvil para ganar espacio */
+        div[style*="display: flex"] {
+            flex-direction: column !important;
+            align-items: center !important;
             text-align: center !important;
         }
-        /* Ajustamos la bandera para que no tape el texto en móvil */
+
         img {
-            width: 80px !important; 
-        }
-        div[style*="display: flex"] {
-            flex-direction: column !important; /* Pone la bandera arriba y el texto abajo en móvil */
-            gap: 10px !important;
+            width: 70px !important; 
         }
     }
 </style>
 """, unsafe_allow_html=True)
-# 2. EL CAMUFLAJE MILITAR (CSS DEFINITIVO)
-# --- MAQUILLAJE DEFINITIVO CON TU FOTO DE FONDO ---
+# --- MAQUILLAJE DEFINITIVO CON TU FOTO DE FONDO Y ARREGLO DE TEXTOS ---
 st.markdown(f"""
     <style>
     /* 1. QUITAR MENÚS */
@@ -82,18 +94,26 @@ st.markdown(f"""
         background-attachment: fixed !important;
     }}
 
-    /* ESTO ARREGLA LAS LETRAS INVISIBLES EN MÓVIL */
+    /* 3. ARREGLO PARA QUE LAS PALABRAS NO SE CORTEN (Importante) */
+    div[data-testid="stExpander"] summary p, 
+    .stButton button, 
+    h1, h2, h3, label {{
+        hyphens: none !important;
+        word-break: keep-all !important;
+        overflow-wrap: normal !important;
+        white-space: normal !important;
+        text-wrap: balance !important;
+    }}
+
+    /* 4. TÍTULOS DE LOS EXPANDERS (Color y tamaño) */
     div[data-testid="stExpander"] summary p {{
-        color: white !important;
+        color: #3B441E !important; /* Verde militar oscuro para que se vea sobre el blanco */
         font-weight: bold !important;
+        font-size: clamp(13px, 3.8vw, 18px) !important;
+        line-height: 1.1 !important;
     }}
 
-    div[data-testid="stExpander"] div[role="region"] p, 
-    div[data-testid="stExpander"] div[role="region"] li {{
-        color: #f0f0f0 !important;
-    }}
-
-    /* 3. BANDERA DE ESPAÑA SUPERIOR */
+    /* 5. BANDERA DE ESPAÑA SUPERIOR */
     .stApp::before {{
         content: "";
         position: fixed;
@@ -102,13 +122,29 @@ st.markdown(f"""
         z-index: 999999;
     }}
 
-    /* 4. TUS TARJETAS */
+    /* 6. ESTILO DE LAS TARJETAS (Expanders) */
     .stExpander {{
         border: 2px solid #556b2f !important;
         border-radius: 15px !important;
-        background-color: rgba(255, 255, 255, 0.9) !important;
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.3) !important;
+        background-color: rgba(255, 255, 255, 0.95) !important; /* Casi blanco para que se lea bien */
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.5) !important;
         margin-bottom: 20px !important;
+    }}
+
+    /* 7. BOTONES PARA MÓVIL */
+    .stButton button {{
+        width: 100% !important;
+        min-height: 55px !important;
+        height: auto !important;
+        font-weight: bold !important;
+    }}
+
+    /* Ajuste de títulos en móvil */
+    @media (max-width: 800px) {{
+        .titulo-top-gun, h1 {{
+            font-size: 38px !important;
+            text-align: center !important;
+        }}
     }}
     </style>
     """, unsafe_allow_html=True)
