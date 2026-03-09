@@ -18,89 +18,80 @@ except:
 # 1. CONFIGURACIÓN (SIEMPRE PRIMERO)
 st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout="wide")
 # 2. EL AJUSTE PARA MÓVIL (Copia y pega esto aquí)
+# --- COPIA Y PEGA ESTE BLOQUE COMPLETO (Sustituye al anterior) ---
 st.markdown(f"""
     <style>
-    /* 1. QUITAR MENÚS */
-    [data-testid="stSidebar"], [data-testid="stSidebarNav"], .stSidebar {{display: none !important;}}
-    button[kind="header"] {{display: none !important;}}
-    header {{visibility: hidden !important;}}
-
-    /* 2. EL FONDO QUE SE AJUSTA AUTOMÁTICAMENTE */
+    /* 1. SOLUCIÓN FONDO ADAPTABLE (PC Y MÓVIL) */
     .stApp {{
         background: none !important;
     }}
-    
     .stApp::before {{
-        content: "";  /* <--- AQUÍ ES DONDE DABA EL ERROR ANTES */
+        content: "";
         position: fixed;
-        top: 0; left: 0;
-        width: 100vw; 
-        height: 100vh;
+        top: 0; left: 0; width: 100vw; height: 100vh;
         z-index: -1;
         background: 
-            linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
+            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
             url("data:image/jpeg;base64,{bin_str}");
-        
-        /* AJUSTE AUTOMÁTICO PARA MÓVIL Y PC */
-        background-size: cover !important; 
-        background-position: center center !important;
+        background-size: cover !important;
+        background-position: center !important;
         background-repeat: no-repeat !important;
     }}
 
-    /* 3. BLINDAJE ANTI MODO NOCHE DE IPHONE (IMPORTANTE) */
-    /* Esta regla anula cualquier cambio de color que el móvil intente hacer */
+    /* 2. FORZAR COLORES PARA QUE NADA SEA INVISIBLE */
+    /* Forzamos que todo lo que esté dentro de un Expander sea Negro/Verde Oscuro */
+    [data-testid="stExpander"] {{
+        background-color: rgba(255, 255, 255, 0.98) !important; /* Blanco casi puro */
+        border: 2px solid #556b2f !important;
+        border-radius: 15px !important;
+    }}
+
+    /* Color de los títulos de los Expanders */
+    div[data-testid="stExpander"] summary p {{
+        color: #1a1a1a !important; /* Negro total para que se vea sí o sí */
+        font-weight: bold !important;
+        font-size: clamp(12px, 3.5vw, 16px) !important;
+        hyphens: none !important;
+        word-break: keep-all !important;
+    }}
+
+    /* Color de los textos interiores (marcas, tablas, listas) */
+    div[data-testid="stExpander"] p, 
+    div[data-testid="stExpander"] li, 
+    div[data-testid="stExpander"] span,
+    div[data-testid="stExpander"] label,
+    .stMarkdown p {{
+        color: #1a1a1a !important; /* Forzamos negro en todo el contenido */
+    }}
+
+    /* 3. ARREGLO ESPECÍFICO PARA LAS TABS (Hombres/Mujeres) */
+    button[data-baseweb="tab"] p {{
+        color: #1a1a1a !important;
+    }}
+
+    /* 4. BLINDAJE CONTRA MODO NOCHE DE IPHONE */
     @media (prefers-color-scheme: dark) {{
-        .stExpander, html, body, [data-testid="stExpander"] {{
-            background-color: white !important; /* Forzamos blanco */
-            color: #3B441E !important; /* Forzamos verde oliva */
+        div[data-testid="stExpander"], .stApp {{
+            background-color: transparent !important;
+        }}
+        div[data-testid="stExpander"] {{
+            background-color: white !important;
+        }}
+        p, li, span, label {{
+            color: #1a1a1a !important;
         }}
     }}
 
-    /* 4. REGLA DE ORO: PROHIBIDO CORTAR PALABRAS */
-    div[data-testid="stExpander"] summary p, 
-    .stButton button, h1, h2, h3, label {{
-        hyphens: none !important; /* Cero guiones de corte */
-        word-break: keep-all !important; /* Mantener la palabra unida */
-        overflow-wrap: normal !important;
-        white-space: normal !important;
-        text-wrap: balance !important; /* Equilibra el texto en dos líneas */
-    }}
-
-    /* 5. AJUSTE DE TÍTULOS DE LOS EXPANDERS */
-    div[data-testid="stExpander"] summary p {{
-        color: #3B441E !important;
-        font-weight: bold !important;
-        /* Tamaño adaptable: un poco más pequeño en móvil para que quepa 'CONVOCATORIA' */
-        font-size: clamp(12px, 3.5vw, 17px) !important; 
-        line-height: 1.1 !important;
-        text-align: center !important;
-    }}
-
-    /* 6. ESTILO DE LAS TARJETAS (Cajas blancas blindadas) */
-    .stExpander {{
-        border: 2px solid #556b2f !important;
-        border-radius: 15px !important;
-        background-color: white !important; /* Blanco sólido forzado */
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.5) !important;
-        margin-bottom: 20px !important;
-    }}
-
-    /* 7. BOTONES GRANDES */
-    .stButton button {{
-        width: 100% !important;
-        min-height: 60px !important;
-        height: auto !important;
-        font-weight: bold !important;
-    }}
-
-    /* 8. BANDERA DE ESPAÑA SUPERIOR */
+    /* 5. BANDERA Y LIMPIEZA */
+    header {{visibility: hidden !important;}}
+    [data-testid="stSidebar"] {{display: none !important;}}
+    
     header::after {{
         content: "";
         position: fixed;
         top: 0; left: 0; width: 100%; height: 10px;
         background: linear-gradient(to bottom, #AA151B 0%, #AA151B 33%, #F1BF00 33%, #F1BF00 66%, #AA151B 66%, #AA151B 100%);
         z-index: 999999;
-        visibility: visible !important;
     }}
     </style>
     """, unsafe_allow_html=True)
