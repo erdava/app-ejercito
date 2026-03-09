@@ -20,7 +20,7 @@ st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout
 # 2. EL AJUSTE PARA MÓVIL (Copia y pega esto aquí)
 st.markdown("""
 <style>
-    /* 1. EVITAR CORTES DE PALABRAS EN TÍTULOS Y BOTONES */
+    /* 1. REGLA DE ORO: PROHIBIDO CORTAR PALABRAS */
     div[data-testid="stExpander"] summary p, 
     .stButton button, 
     h1, h2, h3, label {
@@ -28,25 +28,24 @@ st.markdown("""
         word-break: keep-all !important;
         overflow-wrap: normal !important;
         white-space: normal !important;
-        text-wrap: balance !important;
+        text-wrap: balance !important; /* Distribuye el texto mejor en dos líneas si no cabe en una */
     }
 
-    /* 2. AJUSTE DE TÍTULOS DE LOS EXPANDERS (Los que se cortaban) */
+    /* 2. AJUSTE DE TAMAÑO PARA QUE QUEPAN PALABRAS LARGAS */
     div[data-testid="stExpander"] summary p {
-        font-size: clamp(13px, 3.8vw, 18px) !important; 
+        font-size: clamp(12px, 3.5vw, 16px) !important; /* Un pelín más pequeño para que 'DESIGNACIÓN' quepa mejor */
         line-height: 1.1 !important;
-        font-weight: bold !important;
         color: #3B441E !important;
-        text-align: left !important;
+        text-align: center !important;
+        padding-right: 10px !important;
     }
 
-    /* 3. BOTONES MÁS ALTOS Y LEGIBLES EN MÓVIL */
+    /* 3. BOTONES MÁS AMPLIOS */
     .stButton button {
-        width: 100% !important;
-        min-height: 55px !important;
-        height: auto !important;
-        padding: 10px 5px !important;
-        font-weight: bold !important;
+        min-height: 65px !important; /* Les damos altura para que el texto respire */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     /* 4. SELECTORES (GÉNERO Y EDAD) */
@@ -77,6 +76,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 # --- MAQUILLAJE DEFINITIVO CON TU FOTO DE FONDO Y ARREGLO DE TEXTOS ---
+# --- MAQUILLAJE DEFINITIVO (SOLUCIÓN FONDO MÓVIL) ---
 st.markdown(f"""
     <style>
     /* 1. QUITAR MENÚS */
@@ -84,17 +84,28 @@ st.markdown(f"""
     button[kind="header"] {{display: none !important;}}
     header {{visibility: hidden !important;}}
 
-    /* 2. TU FOTO DE FONDO (INCRUSTADA) */
+    /* 2. SOLUCIÓN PARA FONDO FIJO EN MÓVIL */
     .stApp {{
+        background: none !important;
+    }}
+    
+    .stApp::before {{
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
         background: 
             linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
             url("data:image/jpeg;base64,{bin_str}");
         background-size: cover !important;
         background-position: center !important;
-        background-attachment: fixed !important;
+        /* Quitamos el 'fixed' y usamos la posición fixed de la capa completa */
     }}
 
-    /* 3. ARREGLO PARA QUE LAS PALABRAS NO SE CORTEN (Importante) */
+    /* 3. REGLA DE ORO: PROHIBIDO CORTAR PALABRAS */
     div[data-testid="stExpander"] summary p, 
     .stButton button, 
     h1, h2, h3, label {{
@@ -105,44 +116,46 @@ st.markdown(f"""
         text-wrap: balance !important;
     }}
 
-    /* 4. TÍTULOS DE LOS EXPANDERS (Color y tamaño) */
+    /* 4. TÍTULOS DE LOS EXPANDERS */
     div[data-testid="stExpander"] summary p {{
-        color: #3B441E !important; /* Verde militar oscuro para que se vea sobre el blanco */
+        color: #3B441E !important;
         font-weight: bold !important;
-        font-size: clamp(13px, 3.8vw, 18px) !important;
+        font-size: clamp(12px, 3.5vw, 16px) !important;
         line-height: 1.1 !important;
+        text-align: center !important;
     }}
 
-    /* 5. BANDERA DE ESPAÑA SUPERIOR */
-    .stApp::before {{
-        content: "";
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 12px;
-        background: linear-gradient(to bottom, #AA151B 0%, #AA151B 33%, #F1BF00 33%, #F1BF00 66%, #AA151B 66%, #AA151B 100%);
-        z-index: 999999;
-    }}
-
-    /* 6. ESTILO DE LAS TARJETAS (Expanders) */
+    /* 5. ESTILO DE LAS TARJETAS */
     .stExpander {{
         border: 2px solid #556b2f !important;
         border-radius: 15px !important;
-        background-color: rgba(255, 255, 255, 0.95) !important; /* Casi blanco para que se lea bien */
+        background-color: rgba(255, 255, 255, 0.95) !important;
         box-shadow: 0px 4px 15px rgba(0,0,0,0.5) !important;
         margin-bottom: 20px !important;
     }}
 
-    /* 7. BOTONES PARA MÓVIL */
+    /* 6. BOTONES */
     .stButton button {{
         width: 100% !important;
-        min-height: 55px !important;
+        min-height: 60px !important;
         height: auto !important;
         font-weight: bold !important;
     }}
 
-    /* Ajuste de títulos en móvil */
+    /* 7. BANDERA SUPERIOR */
+    /* Usamos un div diferente para la bandera porque ::before ya lo usamos para el fondo */
+    header::after {{
+        content: "";
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 8px;
+        background: linear-gradient(to bottom, #AA151B 0%, #AA151B 33%, #F1BF00 33%, #F1BF00 66%, #AA151B 66%, #AA151B 100%);
+        z-index: 999999;
+        visibility: visible !important;
+    }}
+
     @media (max-width: 800px) {{
         .titulo-top-gun, h1 {{
-            font-size: 38px !important;
+            font-size: 35px !important;
             text-align: center !important;
         }}
     }}
