@@ -539,13 +539,17 @@ with col_der:
                         with col_paef1: 
                             sexo_sel = st.selectbox("Sexo", ["Hombre", "Mujer"], key="s_global")
                             
+                        # --- BUSCA ESTA PARTE Y DÉJALA ASÍ ---
                         with col_paef2: 
-                            # Usamos un contenedor vacío para dar espacio
-                            # Si el JSON no carga bien las edades, ponemos estas por defecto para que no se quede bloqueado
-                            opciones_edad = baremos.get("age_groups", ["17-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-59", "60+"])
-                            if not opciones_edad:
-                                 opciones_edad = ["17-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-59", "60+"]
-                                 edad_sel = st.selectbox("Selecciona tu Rango de Edad", opciones_edad, key="e_global")
+                            # 1. Sacamos las edades del JSON
+                            opciones_json = baremos.get("age_groups", [])
+                            
+                            # 2. Si el JSON está vacío, usamos estas por defecto para que la App NO EXPLOTE
+                            if not opciones_json:
+                                opciones_json = ["17-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-59", "60+"]
+                            
+                            # 3. Creamos el selector (Asegúrate de que se llame edad_sel exactamente)
+                            edad_sel = st.selectbox("Selecciona tu Rango de Edad", opciones_json, key="e_global")
                         
                         st.divider()
 
@@ -558,13 +562,20 @@ with col_der:
                             a_time = st.text_input("Agilidad (seg.dec)", "14.0")
                             
                             if st.button("Calcular Nota Final"):
-                                # A. CÁLCULOS (Aquí es donde p1, p2, p3 y p4 reciben su valor)
-                                p1 = puntos_flexiones(baremos, sexo_sel, edad_sel, f_reps)
-                                p2 = puntos_2000m(baremos, sexo_sel, edad_sel, c_time)
-                                p3 = puntos_plancha(baremos, sexo_sel, edad_sel, p_time)
-                                p4 = puntos_agilidad(baremos, sexo_sel, edad_sel, a_time)
-                                
-                                total = p1 + p2 + p3 + p4
+                     # Verificamos que las variables existen en la memoria de la app
+                                try:
+                                    # A. CÁLCULOS
+                                    p1 = puntos_flexiones(baremos, sexo_sel, edad_sel, f_reps)
+                                    p2 = puntos_2000m(baremos, sexo_sel, edad_sel, c_time)
+                                    p3 = puntos_plancha(baremos, sexo_sel, edad_sel, p_time)
+                                    p4 = puntos_agilidad(baremos, sexo_sel, edad_sel, a_time)
+                                    
+                                    total = p1 + p2 + p3 + p4
+                                    
+                                    # El resto de tu lógica (B, C, D) sigue igual...
+                                    
+                                except NameError as e:
+                                    st.error(f"⚠️ Error de selección: Asegúrate de elegir Sexo y Edad arriba. ({e})")
                                 
                                 # B. COMPROBAR MÍNIMOS (Regla de los 20 puntos)
                                 fallos = []
