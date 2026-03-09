@@ -30,51 +30,68 @@ if 'config_done' not in st.session_state:
 # 2. ESTILO DEFINITIVO (Fondo adaptable y letras visibles)
 st.markdown(f"""
     <style>
-    /* FONDO ADAPTABLE */
+    /* 1. FONDO FIJO QUE NO FALLA */
     .stApp {{
         background: none !important;
     }}
     .stApp::before {{
         content: "";
         position: fixed;
-        top: 0; left: 0; 
-        width: 100%; height: 100%;
+        top: 0; left: 0; width: 100vw; height: 100vh;
         z-index: -1;
         background: 
-            linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
             url("data:image/jpeg;base64,{bin_str}");
-        background-size: cover !important; /* Estira la foto para que siempre llene la pantalla */
-        background-position: center center !important; /* Centra el motivo militar */
-        background-repeat: no-repeat !important;
-        background-attachment: fixed;
+        background-size: cover !important;
+        background-position: center !important;
     }}
 
-    /* CAJAS BLANCAS BLINDADAS (Anti modo noche) */
+    /* 2. BLINDAJE TOTAL DE TEXTO (Para que se vea TODO) */
+    /* Forzamos que CUALQUIER texto sea negro dentro de la app */
+    .stApp p, .stApp span, .stApp label, .stApp li, .stApp h1, .stApp h2, .stApp h3, .stApp div {{
+        color: #1a1a1a !important; /* Negro casi puro */
+    }}
+
+    /* 3. EXCEPCIÓN: Títulos principales que van sobre el fondo oscuro */
+    .titulo-top-gun, h1[id*="somos-tu-ej-rcito"] {{
+        color: white !important;
+        text-shadow: 2px 2px 4px #000000;
+    }}
+
+    /* 4. TARJETAS (EXPANDERS) BLANCO SÓLIDO */
     div[data-testid="stExpander"] {{
         background-color: white !important;
         border: 2px solid #556b2f !important;
         border-radius: 15px !important;
     }}
 
-    /* TEXTOS EN NEGRO ABSOLUTO */
-    div[data-testid="stExpander"] p, 
-    div[data-testid="stExpander"] li, 
-    div[data-testid="stExpander"] span,
-    div[data-testid="stExpander"] label,
-    div[data-testid="stExpander"] summary p,
-    .stMarkdown p {{
-        color: #000000 !important; /* Negro puro */
+    /* Color de los títulos de los Expanders (CONVOCATORIA, etc) */
+    div[data-testid="stExpander"] summary p {{
+        color: #3B441E !important; /* Verde militar oscuro */
         font-weight: bold !important;
+        font-size: clamp(12px, 3.5vw, 16px) !important;
         hyphens: none !important;
         word-break: keep-all !important;
     }}
 
-    /* AJUSTE PARA TABS */
+    /* 5. ARREGLO DE LAS TABS (Hombres/Mujeres) */
     button[data-baseweb="tab"] p {{
-        color: #000000 !important;
+        color: #3B441E !important;
     }}
-    
-    /* BANDERA SUPERIOR */
+    button[data-baseweb="tab"][aria-selected="true"] {{
+        background-color: #f0f2f6 !important;
+    }}
+
+    /* 6. BOTONES (Solicitar Cita, etc) */
+    .stButton button {{
+        background-color: #3B441E !important;
+        color: white !important;
+        border-radius: 10px !important;
+        font-weight: bold !important;
+        width: 100% !important;
+    }}
+
+    /* 7. BANDERA SUPERIOR */
     header::after {{
         content: "";
         position: fixed;
