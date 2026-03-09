@@ -30,7 +30,7 @@ if 'config_done' not in st.session_state:
 # 2. ESTILO DEFINITIVO (Fondo adaptable y letras visibles)
 st.markdown(f"""
     <style>
-    /* FONDO Y CAPA GENERAL */
+    /* 1. FONDO ESTRUCTURAL */
     .stApp {{ background: none !important; }}
     .stApp::before {{
         content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
@@ -39,58 +39,57 @@ st.markdown(f"""
         background-size: cover !important; background-position: center !important;
     }}
 
-    /* BLINDAJE DE FORMULARIOS (Para que los desplegables se lean) */
-    div[data-baseweb="select"], div[data-baseweb="input"], input, select {{
-        background-color: white !important;
+    /* 2. BLINDAJE TOTAL DE TEXTO (ELIMINA LETRAS INVISIBLES) */
+    /* Forzamos negro puro en CUALQUIER texto que pueda existir */
+    html, body, .stApp, .stMarkdown, p, span, li, label, div, h1, h2, h3, summary {{
+        color: #000000 !important; 
+        -webkit-text-fill-color: #000000 !important; /* Fuerza el color en iOS */
+    }}
+
+    /* 3. EXCEPCIÓN PARA TÍTULOS SOBRE FONDO OSCURO */
+    /* Si tienes un título principal arriba, asegúrate de darle esta clase en el st.markdown */
+    .titulo-blanco {{
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+        text-shadow: 2px 2px 4px #000000;
+    }}
+
+    /* 4. FORMULARIOS BLANCOS (Desplegables y Números) */
+    div[data-baseweb="select"], div[data-baseweb="input"], input, select, .stNumberInput div {{
+        background-color: #ffffff !important;
         border: 2px solid #3B441E !important;
-        border-radius: 10px !important;
     }}
 
-    /* Color del texto dentro de selectores y cuadros de texto */
-    div[data-baseweb="select"] *, div[data-baseweb="input"] *, input, select, option {{
-        color: black !important;
-        -webkit-text-fill-color: black !important;
-    }}
-
-    /* TARJETAS (EXPANDERS) */
+    /* 5. TARJETAS (EXPANDERS) */
     div[data-testid="stExpander"] {{
-        background-color: white !important;
+        background-color: #ffffff !important;
         border: 2px solid #556b2f !important;
         border-radius: 15px !important;
     }}
 
-    /* TEXTO GENERAL (Negro para que no desaparezca) */
-    p, span, label, li, summary p {{
-        color: #1a1a1a !important;
-        font-weight: bold !important;
-    }}
-
-    /* BOTONES */
+    /* 6. BOTONES (CALCULAR, CITA, ETC) */
     .stButton button {{
         background-color: #3B441E !important;
-        color: white !important;
-        font-weight: bold !important;
-        width: 100% !important;
-        min-height: 50px !important;
+        border: none !important;
     }}
-    .stButton button p {{ color: white !important; }}
+    .stButton button p {{
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+    }}
 
-    /* QUITAR CORTES DE PALABRAS */
+    /* 7. QUITAR GUIONES Y CORTES */
     * {{ hyphens: none !important; word-break: keep-all !important; }}
 
-    /* CABECERA Y BANDERA */
+    /* 8. BANDERA SUPERIOR */
     header {{ visibility: hidden !important; }}
-    [data-testid="stSidebar"] {{ display: none !important; }}
-    
-    .bandera-superior {{
+    .bandera-fix {{
         position: fixed; top: 0; left: 0; width: 100%; height: 10px;
         background: linear-gradient(to bottom, #AA151B 0%, #AA151B 33%, #F1BF00 33%, #F1BF00 66%, #AA151B 66%, #AA151B 100%);
         z-index: 999999;
     }}
     </style>
-    <div class="bandera-superior"></div>
+    <div class="bandera-fix"></div>
     """, unsafe_allow_html=True)
-
 # 3. BANDERA DE CABECERA (Imagen real, sutil pero clara)
 st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Bandera_de_Espa%C3%B1a.svg/1200px-Bandera_de_Espa%C3%B1a.svg.png", width=120)
 
