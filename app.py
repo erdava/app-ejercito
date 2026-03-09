@@ -492,9 +492,9 @@ with col_der:
                         with col_paef2: 
                             # Usamos un contenedor vacío para dar espacio
                             # Si el JSON no carga bien las edades, ponemos estas por defecto para que no se quede bloqueado
-                            opciones_edad = baremos.get("age_groups", ["18-24", "25-29", "30-34", "35-39", "+40"])
+                            opciones_edad = baremos.get("age_groups", ["17-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-59", "60+"])
                             if not opciones_edad:
-                                 opciones_edad = ["18-24", "25-29", "30-34", "35-39", "+40"]
+                                 opciones_edad = ["17-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-59", "60+"]
                             edad_sel = st.selectbox("Selecciona tu Rango de Edad", opciones_edad, key="e_global")
                         
                         st.divider()
@@ -682,3 +682,4 @@ with col_der:
                         st.write("- **Acceso sin Titulación:** Vía de ingreso directo o promoción interna.")
                         st.write("- **Cuerpo General y Especialistas:** Diferentes perfiles operativos.")
                         st.warning("⚠️ Consulta las convocatorias anuales para las plazas específicas de tu Cuerpo.")
+
