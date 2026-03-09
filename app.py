@@ -119,39 +119,42 @@ st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Bandera_de_E
 st.markdown("---") # Una línea divisoria elegante
 
 # --- FUNCIONES DE CÁLCULO (EL MOTOR) ---
-def obtener_puntos(tipo_prueba, genero, edad, marca_usuario, data_json):
-    """
-    Busca en el JSON el tramo de edad y devuelve los puntos exactos.
-    """
-    # 1. Identificar el grupo de edad del JSON
+def obtener_puntos_reales(tipo_prueba, genero, edad, marca_usuario, data_json):
+    # 1. Ajustamos el género para que coincida con el JSON (Mayúscula inicial)
+    genero_formateado = genero.capitalize() 
+
+    # 2. Buscamos el tramo de edad
     grupo_edad_final = None
     for grupo in data_json["age_groups"]:
         if "-" in grupo:
             inicio, fin = map(int, grupo.split("-"))
-            if inicio <= edad <= fin:
+            if inicio <= int(edad) <= fin:
                 grupo_edad_final = grupo
                 break
         elif "+" in grupo:
             inicio = int(grupo.replace("+", ""))
-            if edad >= inicio:
+            if int(edad) >= inicio:
                 grupo_edad_final = grupo
                 break
 
     if not grupo_edad_final:
-        return 0 # Edad no contemplada
+        return 0
 
-    # 2. Ir a la tabla del JSON (flexiones -> Hombre -> "17-25")
+    # 3. Buscamos la puntuación sin inventar nada (directo del JSON)
     try:
-        lista_puntos = data_json["tables"][tipo_prueba][genero][grupo_edad_final]
+        # Convertimos la marca a número por si acaso viene como texto de la App
+        marca_num = float(marca_usuario) 
+        lista_puntos = data_json["tables"][tipo_prueba][genero_formateado][grupo_edad_final]
         
-        # 3. Recorrer la lista de arriba a abajo
+        # Recorremos la tabla que me pasaste
         for tramo in lista_puntos:
-            # Si la marca del usuario es MAYOR o IGUAL a la del JSON, esos son sus puntos
-            if marca_usuario >= tramo["reps"]:
+            # SI ES REPS (Flexiones, Abdominales...): Más es mejor
+            # (Si es carrera me avisas porque la lógica es al revés)
+            if marca_num >= tramo["reps"]:
                 return tramo["points"]
         
-        return 0 # Si no llega ni al mínimo
-    except KeyError:
+        return 0
+    except Exception:
         return 0
 
 
