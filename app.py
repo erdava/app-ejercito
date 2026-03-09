@@ -119,6 +119,42 @@ st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Bandera_de_E
 st.markdown("---") # Una línea divisoria elegante
 
 # --- FUNCIONES DE CÁLCULO (EL MOTOR) ---
+def obtener_puntos(tipo_prueba, genero, edad, marca_usuario, data_json):
+    """
+    Busca en el JSON el tramo de edad y devuelve los puntos exactos.
+    """
+    # 1. Identificar el grupo de edad del JSON
+    grupo_edad_final = None
+    for grupo in data_json["age_groups"]:
+        if "-" in grupo:
+            inicio, fin = map(int, grupo.split("-"))
+            if inicio <= edad <= fin:
+                grupo_edad_final = grupo
+                break
+        elif "+" in grupo:
+            inicio = int(grupo.replace("+", ""))
+            if edad >= inicio:
+                grupo_edad_final = grupo
+                break
+
+    if not grupo_edad_final:
+        return 0 # Edad no contemplada
+
+    # 2. Ir a la tabla del JSON (flexiones -> Hombre -> "17-25")
+    try:
+        lista_puntos = data_json["tables"][tipo_prueba][genero][grupo_edad_final]
+        
+        # 3. Recorrer la lista de arriba a abajo
+        for tramo in lista_puntos:
+            # Si la marca del usuario es MAYOR o IGUAL a la del JSON, esos son sus puntos
+            if marca_usuario >= tramo["reps"]:
+                return tramo["points"]
+        
+        return 0 # Si no llega ni al mínimo
+    except KeyError:
+        return 0
+
+
 
 def mmss_to_seconds(t: str) -> int:
     t = t.strip()
@@ -682,4 +718,3 @@ with col_der:
                         st.write("- **Acceso sin Titulación:** Vía de ingreso directo o promoción interna.")
                         st.write("- **Cuerpo General y Especialistas:** Diferentes perfiles operativos.")
                         st.warning("⚠️ Consulta las convocatorias anuales para las plazas específicas de tu Cuerpo.")
-
