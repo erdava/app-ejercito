@@ -11,10 +11,16 @@ def get_base64(bin_file):
 
 # CAMBIA ESTO: Pon el nombre real de tu foto. 
 # Si tu foto se llama 'militar.jpg', pon "militar.jpg"
+ruta_foto = "static/tu_foto_militar.jpeg" # Ruta 1
+
 try:
-    bin_str = get_base64("tu_foto_militar.jpeg") 
+    bin_str = get_base64(ruta_foto)
 except:
-    bin_str = "" 
+    try:
+        # Intento 2: Por si acaso la carpeta se llama distinto en el servidor
+        bin_str = get_base64("tu_foto_militar.jpeg")
+    except:
+        bin_str = "" 
 
 # 1. CONFIGURACIÓN
 if 'config_done' not in st.session_state:
