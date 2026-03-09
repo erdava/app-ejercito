@@ -18,73 +18,14 @@ except:
 # 1. CONFIGURACIÓN (SIEMPRE PRIMERO)
 st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout="wide")
 # 2. EL AJUSTE PARA MÓVIL (Copia y pega esto aquí)
-st.markdown("""
-<style>
-    /* 1. REGLA DE ORO: PROHIBIDO CORTAR PALABRAS */
-    div[data-testid="stExpander"] summary p, 
-    .stButton button, 
-    h1, h2, h3, label {
-        hyphens: none !important;
-        word-break: keep-all !important;
-        overflow-wrap: normal !important;
-        white-space: normal !important;
-        text-wrap: balance !important; /* Distribuye el texto mejor en dos líneas si no cabe en una */
-    }
-
-    /* 2. AJUSTE DE TAMAÑO PARA QUE QUEPAN PALABRAS LARGAS */
-    div[data-testid="stExpander"] summary p {
-        font-size: clamp(12px, 3.5vw, 16px) !important; /* Un pelín más pequeño para que 'DESIGNACIÓN' quepa mejor */
-        line-height: 1.1 !important;
-        color: #3B441E !important;
-        text-align: center !important;
-        padding-right: 10px !important;
-    }
-
-    /* 3. BOTONES MÁS AMPLIOS */
-    .stButton button {
-        min-height: 65px !important; /* Les damos altura para que el texto respire */
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
-    /* 4. SELECTORES (GÉNERO Y EDAD) */
-    .stSelectbox label p {
-        color: #3B441E !important;
-        font-weight: bold !important;
-    }
-
-    /* 5. AJUSTES ESPECÍFICOS PARA MÓVIL */
-    @media (max-width: 800px) {
-        .titulo-top-gun, h1 {
-            font-size: 38px !important; 
-            text-align: center !important;
-            line-height: 1 !important;
-        }
-        
-        /* Bandera y título en vertical en móvil para ganar espacio */
-        div[style*="display: flex"] {
-            flex-direction: column !important;
-            align-items: center !important;
-            text-align: center !important;
-        }
-
-        img {
-            width: 70px !important; 
-        }
-    }
-</style>
-""", unsafe_allow_html=True)
-# --- MAQUILLAJE DEFINITIVO CON TU FOTO DE FONDO Y ARREGLO DE TEXTOS ---
-# --- MAQUILLAJE DEFINITIVO (SOLUCIÓN FONDO MÓVIL) ---
 st.markdown(f"""
     <style>
-    /* 1. QUITAR MENÚS */
+    /* 1. QUITAR MENÚS Y CABECERAS */
     [data-testid="stSidebar"], [data-testid="stSidebarNav"], .stSidebar {{display: none !important;}}
     button[kind="header"] {{display: none !important;}}
     header {{visibility: hidden !important;}}
 
-    /* 2. SOLUCIÓN PARA FONDO FIJO EN MÓVIL */
+    /* 2. SOLUCIÓN DEFINITIVA FONDO FIJO (PC Y MÓVIL) */
     .stApp {{
         background: none !important;
     }}
@@ -92,23 +33,19 @@ st.markdown(f"""
     .stApp::before {{
         content: "";
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
+        top: 0; left: 0; width: 100vw; height: 100vh;
         z-index: -1;
         background: 
-            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+            linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
             url("data:image/jpeg;base64,{bin_str}");
         background-size: cover !important;
         background-position: center !important;
-        /* Quitamos el 'fixed' y usamos la posición fixed de la capa completa */
+        background-repeat: no-repeat !important;
     }}
 
-    /* 3. REGLA DE ORO: PROHIBIDO CORTAR PALABRAS */
+    /* 3. PROHIBIDO CORTAR PALABRAS */
     div[data-testid="stExpander"] summary p, 
-    .stButton button, 
-    h1, h2, h3, label {{
+    .stButton button, h1, h2, h3, label {{
         hyphens: none !important;
         word-break: keep-all !important;
         overflow-wrap: normal !important;
@@ -116,12 +53,12 @@ st.markdown(f"""
         text-wrap: balance !important;
     }}
 
-    /* 4. TÍTULOS DE LOS EXPANDERS */
+    /* 4. TÍTULOS DE LOS EXPANDERS (Letras blancas para que se vean) */
     div[data-testid="stExpander"] summary p {{
-        color: #3B441E !important;
+        color: white !important; /* CAMBIADO A BLANCO PARA QUE SE VEA BIEN */
         font-weight: bold !important;
         font-size: clamp(12px, 3.5vw, 16px) !important;
-        line-height: 1.1 !important;
+        line-height: 1.2 !important;
         text-align: center !important;
     }}
 
@@ -129,7 +66,8 @@ st.markdown(f"""
     .stExpander {{
         border: 2px solid #556b2f !important;
         border-radius: 15px !important;
-        background-color: rgba(255, 255, 255, 0.95) !important;
+        background-color: rgba(255, 255, 255, 0.1) !important; /* Fondo translúcido militar */
+        backdrop-filter: blur(10px); /* Efecto cristal para que se vea la foto detrás */
         box-shadow: 0px 4px 15px rgba(0,0,0,0.5) !important;
         margin-bottom: 20px !important;
     }}
@@ -138,26 +76,19 @@ st.markdown(f"""
     .stButton button {{
         width: 100% !important;
         min-height: 60px !important;
-        height: auto !important;
-        font-weight: bold !important;
+        background-color: #556b2f !important; /* Verde militar */
+        color: white !important;
+        border-radius: 10px !important;
     }}
 
     /* 7. BANDERA SUPERIOR */
-    /* Usamos un div diferente para la bandera porque ::before ya lo usamos para el fondo */
     header::after {{
         content: "";
         position: fixed;
-        top: 0; left: 0; width: 100%; height: 8px;
+        top: 0; left: 0; width: 100%; height: 10px;
         background: linear-gradient(to bottom, #AA151B 0%, #AA151B 33%, #F1BF00 33%, #F1BF00 66%, #AA151B 66%, #AA151B 100%);
         z-index: 999999;
         visibility: visible !important;
-    }}
-
-    @media (max-width: 800px) {{
-        .titulo-top-gun, h1 {{
-            font-size: 35px !important;
-            text-align: center !important;
-        }}
     }}
     </style>
     """, unsafe_allow_html=True)
