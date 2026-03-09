@@ -9,19 +9,22 @@ def get_base64(bin_file):
         data = f.read()
     return base64.b64encode(data).decode()
 
-# Cambia "static/tu_foto_militar.jpeg" por la ruta real donde esté tu foto ahora mismo
-# Si está en la misma carpeta que el script, pon solo "tu_foto_militar.jpeg"
+# CAMBIA ESTO: Pon el nombre real de tu foto. 
+# Si tu foto se llama 'militar.jpg', pon "militar.jpg"
 try:
-    bin_str = get_base64("static/tu_foto_militar.jpeg")
+    bin_str = get_base64("tu_foto_militar.jpeg") 
 except:
-    bin_str = "" # Por si falla que no rompa la app
-# 1. CONFIGURACIÓN (SIEMPRE PRIMERO)
-st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout="wide")
-# 2. EL AJUSTE PARA MÓVIL (Copia y pega esto aquí)
-# --- COPIA Y PEGA ESTE BLOQUE COMPLETO (Sustituye al anterior) ---
+    bin_str = "" 
+
+# 1. CONFIGURACIÓN
+if 'config_done' not in st.session_state:
+    st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout="wide")
+    st.session_state.config_done = True
+
+# 2. ESTILO DEFINITIVO (Fondo adaptable y letras visibles)
 st.markdown(f"""
     <style>
-    /* 1. SOLUCIÓN FONDO ADAPTABLE (PC Y MÓVIL) */
+    /* FONDO ADAPTABLE */
     .stApp {{
         background: none !important;
     }}
@@ -31,61 +34,38 @@ st.markdown(f"""
         top: 0; left: 0; width: 100vw; height: 100vh;
         z-index: -1;
         background: 
-            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+            linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
             url("data:image/jpeg;base64,{bin_str}");
         background-size: cover !important;
         background-position: center !important;
-        background-repeat: no-repeat !important;
     }}
 
-    /* 2. FORZAR COLORES PARA QUE NADA SEA INVISIBLE */
-    /* Forzamos que todo lo que esté dentro de un Expander sea Negro/Verde Oscuro */
-    [data-testid="stExpander"] {{
-        background-color: rgba(255, 255, 255, 0.98) !important; /* Blanco casi puro */
+    /* CAJAS BLANCAS BLINDADAS (Anti modo noche) */
+    div[data-testid="stExpander"] {{
+        background-color: white !important;
         border: 2px solid #556b2f !important;
         border-radius: 15px !important;
     }}
 
-    /* Color de los títulos de los Expanders */
-    div[data-testid="stExpander"] summary p {{
-        color: #1a1a1a !important; /* Negro total para que se vea sí o sí */
-        font-weight: bold !important;
-        font-size: clamp(12px, 3.5vw, 16px) !important;
-        hyphens: none !important;
-        word-break: keep-all !important;
-    }}
-
-    /* Color de los textos interiores (marcas, tablas, listas) */
+    /* TEXTOS EN NEGRO ABSOLUTO */
     div[data-testid="stExpander"] p, 
     div[data-testid="stExpander"] li, 
     div[data-testid="stExpander"] span,
     div[data-testid="stExpander"] label,
+    div[data-testid="stExpander"] summary p,
     .stMarkdown p {{
-        color: #1a1a1a !important; /* Forzamos negro en todo el contenido */
+        color: #000000 !important; /* Negro puro */
+        font-weight: bold !important;
+        hyphens: none !important;
+        word-break: keep-all !important;
     }}
 
-    /* 3. ARREGLO ESPECÍFICO PARA LAS TABS (Hombres/Mujeres) */
+    /* AJUSTE PARA TABS */
     button[data-baseweb="tab"] p {{
-        color: #1a1a1a !important;
+        color: #000000 !important;
     }}
-
-    /* 4. BLINDAJE CONTRA MODO NOCHE DE IPHONE */
-    @media (prefers-color-scheme: dark) {{
-        div[data-testid="stExpander"], .stApp {{
-            background-color: transparent !important;
-        }}
-        div[data-testid="stExpander"] {{
-            background-color: white !important;
-        }}
-        p, li, span, label {{
-            color: #1a1a1a !important;
-        }}
-    }}
-
-    /* 5. BANDERA Y LIMPIEZA */
-    header {{visibility: hidden !important;}}
-    [data-testid="stSidebar"] {{display: none !important;}}
     
+    /* BANDERA SUPERIOR */
     header::after {{
         content: "";
         position: fixed;
