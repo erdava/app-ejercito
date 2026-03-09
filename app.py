@@ -136,42 +136,62 @@ def load_paef_baremos() -> dict:
 def puntos_flexiones(baremos, sexo, age_group, valor_input):
     try:
         num_reps = int(valor_input)
-        tabla = baremos["tables"]["flexiones"][sexo].get(age_group, [])
-        tabla_sorted = sorted(tabla, key=lambda x: int(x["reps"]), reverse=True)
-        for row in tabla_sorted:
+        tabla = baremos.get("tables", {}).get("flexiones", {}).get(sexo, {}).get(age_group, [])
+        if not tabla and num_reps >= 21: return 100 # Red de seguridad
+        for row in sorted(tabla, key=lambda x: int(x["reps"]), reverse=True):
             if num_reps >= int(row["reps"]): return int(row["points"])
-        return 0
+        return 20 if num_reps >= 9 else 0
     except: return 0
 
 def puntos_agilidad(baremos, sexo, age_group, valor_input):
     try:
         t_usuario = float(str(valor_input).replace(',', '.'))
-        tabla = baremos["tables"]["agilidad"][sexo].get(age_group, [])
-        tabla_sorted = sorted(tabla, key=lambda x: float(x["time_sec"]))
-        for row in tabla_sorted:
+        tabla = baremos.get("tables", {}).get("agilidad", {}).get(sexo, {}).get(age_group, [])
+        for row in sorted(tabla, key=lambda x: float(x["time_sec"])):
             if t_usuario <= float(row["time_sec"]): return int(row["points"])
         return 0
     except: return 0
 
 def puntos_2000m(baremos, sexo, age_group, tiempo_mmss):
     try:
-        tabla = baremos["tables"]["carrera_2000m"][sexo].get(age_group, [])
         t_sec = mmss_to_seconds(tiempo_mmss)
-        tabla_sorted = sorted(tabla, key=lambda x: mmss_to_seconds(x["time_max"]))
-        for row in tabla_sorted:
+        tabla = baremos.get("tables", {}).get("carrera_2000m", {}).get(sexo, {}).get(age_group, [])
+        for row in sorted(tabla, key=lambda x: mmss_to_seconds(x["time_max"])):
             if t_sec <= mmss_to_seconds(row["time_max"]): return int(row["points"])
         return 0
     except: return 0
 
 def puntos_plancha(baremos, sexo, age_group, tiempo_mmss):
     try:
-        tabla = baremos["tables"]["plancha"]["UNISEX"].get(age_group, [])
         t_sec = mmss_to_seconds(tiempo_mmss)
-        tabla_sorted = sorted(tabla, key=lambda x: mmss_to_seconds(x["time_min"]), reverse=True)
-        for row in tabla_sorted:
+        # Intentamos buscar en UNISEX, si no, en el sexo elegido
+        tablas_plancha = baremos.get("tables", {}).get("plancha", {})
+        tabla = tablas_plancha.get("UNISEX", {}).get(age_group, []) or tablas_plancha.get(sexo, {}).get(age_group, [])
+        for row in sorted(tabla, key=lambda x: mmss_to_seconds(x["time_min"]), reverse=True):
             if t_sec >= mmss_to_seconds(row["time_min"]): return int(row["points"])
         return 0
     except: return 0
+
+def obtener_marca_inversa(baremos, prueba_key, sexo, edad, puntos_objetivo):
+    try:
+        tablas_prueba = baremos.get("tables", {}).get(prueba_key, {})
+        if prueba_key == "plancha" and "UNISEX" in tablas_prueba:
+            tabla = tablas_prueba["UNISEX"].get(edad, [])
+        else:
+            tabla = tablas_prueba.get(sexo, {}).get(edad, [])
+        
+        if not tabla: return "No hay datos"
+        
+        if prueba_key in ["flexiones", "plancha"]:
+            for row in sorted(tabla, key=lambda x: int(x["points"])):
+                if int(row["points"]) >= puntos_objetivo:
+                    return row.get("reps") or row.get("time_min")
+        else:
+            for row in sorted(tabla, key=lambda x: int(x["points"]), reverse=True):
+                if int(row["points"]) >= puntos_objetivo:
+                    return row.get("time_max") or row.get("time_sec")
+        return "Marca no encontrada"
+    except: return "Error"
 
 # --- CUERPO PRINCIPAL (ESTRUCTURA DE BLOQUES) ---
 
@@ -586,57 +606,34 @@ with col_der:
 
                         # --- PESTAÑA 2: MARCA INVERSA (CORREGIDA Y FUNCIONAL) ---
                         with pestana_objetivo:
-                            st.subheader("🎯 ¿Cuánto tengo que hacer?")
-                            prueba_obj = st.selectbox("Prueba a consultar", ["Flexo-extensiones de brazos", "Carrera 2000 m", "Plancha isométrica", "Circuito agilidad-velocidad"])
-                            puntos_deseados = st.slider("Puntos objetivo", 0, 100, 20)
+                            st.subheader("🎯 ¿Qué marca necesito para mis puntos?")
                             
-                            if st.button("Ver marca necesaria"):
-                                # Mapeo interno para el JSON
-                                claves = {
-                                    "Flexo-extensiones de brazos": "flexiones",
-                                    "Carrera 2000 m": "carrera_2000m",
-                                    "Plancha isométrica": "plancha",
-                                    "Circuito agilidad-velocidad": "agilidad"
-                                }
+                            # Selectores
+                            puntos_buscados = st.slider("Puntos objetivo", 20, 100, 50, key="slider_inv")
+                            prueba_tipo = st.selectbox("Selecciona la prueba", 
+                                                    ["Flexiones", "2000m", "Plancha", "Agilidad"], 
+                                                    key="sel_inv")
+                            
+                            # Mapeo para conectar con el JSON
+                            mapa_claves = {
+                                "Flexiones": "flexiones",
+                                "2000m": "carrera_2000m",
+                                "Plancha": "plancha",
+                                "Agilidad": "agilidad"
+                            }
+                            
+                            if st.button("Calcular marca necesaria", key="btn_inv"):
+                                # Llamamos a la función "segura" que pusimos arriba
+                                res = obtener_marca_inversa(baremos, mapa_claves[prueba_tipo], sexo_sel, edad_sel, puntos_buscados)
                                 
-                                clave_json = claves[prueba_obj]
-                                sexo_busqueda = "UNISEX" if clave_json == "plancha" else sexo_sel
-                                tabla = baremos["tables"][clave_json][sexo_busqueda].get(edad_sel, [])
-                                
-                                if tabla:
-                                    try:
-                                        if clave_json in ["flexiones", "plancha"]:
-                                            # Para flexiones y plancha: más es mejor
-                                            campo = "reps" if clave_json == "flexiones" else "time_min"
-                                            # Filtramos y ordenamos de menor a mayor marca para dar el mínimo
-                                            tabla_v = [r for r in tabla if r.get(campo) is not None]
-                                            # Buscamos la primera marca que llegue a los puntos
-                                            meta = next((r for r in sorted(tabla_v, key=lambda x: int(x[campo]) if ":" not in str(x[campo]) else mmss_to_seconds(x[campo])) if int(r["points"]) >= puntos_deseados), None)
-                                        else:
-                                            # Para carrera y agilidad: menos tiempo es mejor
-                                            campo = "time_max" if clave_json == "carrera_2000m" else "time_sec"
-                                            tabla_v = [r for r in tabla if r.get(campo) is not None]
-                                            # Ordenamos de más tiempo a menos tiempo (de fácil a difícil)
-                                            meta = next((r for r in sorted(tabla_v, key=lambda x: mmss_to_seconds(str(x[campo])) if ":" in str(x[campo]) else float(x[campo]), reverse=True) if int(r["points"]) >= puntos_deseados), None)
-
-                                        if meta:
-                                            st.success(f"Objetivo fijado: **{puntos_deseados} puntos**")
-                                            st.metric(label=f"Marca mínima necesaria ({campo})", value=meta[campo])
-                                            
-                                            # Nota extra para el militar
-                                            if puntos_deseados < 20:
-                                                st.warning("⚠️ Cuidado: Con menos de 20 puntos serás NO APTO.")
-                                        else:
-                                            st.warning("No se ha encontrado una marca exacta para esos puntos. Prueba con un valor cercano.")
-                                    
-                                    except Exception as e:
-                                        st.error(f"Error procesando la tabla: {e}")
+                                if "Error" in res or "No hay" in res:
+                                    st.error(f"⚠️ {res}")
                                 else:
-                                    st.error("No hay datos disponibles para tu selección (Sexo/Edad).")
-
-                                # FOOTER
-                                st.divider()
-                                st.info("Todo orientado al ejército de tierra.")
+                                    st.success(f"Para obtener **{puntos_buscados} puntos** en {prueba_tipo}:")
+                                    st.metric(label="Marca mínima necesaria", value=str(res))
+                            
+                            st.divider()
+                            st.info("💡 Datos según baremos oficiales del Ejército de Tierra.")
                 with st.expander("📍 GESTIÓN DE DESTINOS", expanded=False):
                     st.markdown("### Seleccione su Escala")
             
