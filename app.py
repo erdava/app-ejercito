@@ -225,6 +225,7 @@ def puntos_plancha(baremos, sexo, age_group, tiempo_mmss):
 def obtener_marca_inversa(baremos, prueba_key, sexo, edad, puntos_objetivo):
     try:
         tablas_prueba = baremos.get("tables", {}).get(prueba_key, {})
+        # Caso especial plancha (Unisex)
         if prueba_key == "plancha" and "UNISEX" in tablas_prueba:
             tabla = tablas_prueba["UNISEX"].get(edad, [])
         else:
@@ -232,16 +233,24 @@ def obtener_marca_inversa(baremos, prueba_key, sexo, edad, puntos_objetivo):
         
         if not tabla: return "No hay datos"
         
+        # Pruebas donde MÁS es MEJOR (Flexiones, Plancha)
         if prueba_key in ["flexiones", "plancha"]:
+            # Ordenamos de menos a más puntos
             for row in sorted(tabla, key=lambda x: int(x["points"])):
                 if int(row["points"]) >= puntos_objetivo:
-                    return row.get("reps") or row.get("time_min")
+                    # Devolvemos el valor como STRING para que no pete el IF de después
+                    return str(row.get("reps") or row.get("time_min"))
+        
+        # Pruebas donde MENOS es MEJOR (Carrera, Agilidad)
         else:
+            # Ordenamos de más a menos puntos (de marcas difíciles a fáciles)
             for row in sorted(tabla, key=lambda x: int(x["points"]), reverse=True):
                 if int(row["points"]) >= puntos_objetivo:
-                    return row.get("time_max") or row.get("time_sec")
-        return "Marca no encontrada"
-    except: return "Error"
+                    return str(row.get("time_max") or row.get("time_sec"))
+                    
+        return "No alcanzable"
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 # --- CUERPO PRINCIPAL (ESTRUCTURA DE BLOQUES) ---
 
@@ -666,33 +675,38 @@ with col_der:
 
 
                         # --- PESTAÑA 2: MARCA INVERSA (CORREGIDA Y FUNCIONAL) ---
+                        # --- BLOQUE DE MARCA INVERSA CORREGIDO ---
                         with pestana_objetivo:
-                            st.subheader("🎯 ¿Qué marca necesito para mis puntos?")
+                            st.subheader("🎯 ¿Qué marca necesito para sacar X puntos?")
                             
-                            # Selectores
-                            puntos_buscados = st.slider("Puntos objetivo", 20, 100, 50, key="slider_inv")
-                            prueba_tipo = st.selectbox("Selecciona la prueba", 
-                                                    ["Flexiones", "2000m", "Plancha", "Agilidad"], 
-                                                    key="sel_inv")
-                            
-                            # Mapeo para conectar con el JSON
-                            mapa_claves = {
+                            # 1. DEFINIMOS LAS VARIABLES QUE TE SALEN EN AMARILLO
+                            # Creamos un diccionario para que el usuario vea nombres bonitos pero el código use las llaves del JSON
+                            dict_pruebas = {
                                 "Flexiones": "flexiones",
-                                "2000m": "carrera_2000m",
+                                "Carrera 2000m": "carrera_2000m",
                                 "Plancha": "plancha",
                                 "Agilidad": "agilidad"
                             }
                             
-                            if st.button("Calcular marca necesaria", key="btn_inv"):
-                                # Llamamos a la función "segura" que pusimos arriba
-                                res = obtener_marca_inversa(baremos, mapa_claves[prueba_tipo], sexo_sel, edad_sel, puntos_buscados)
-                                
-                                if "Error" in res or "No hay" in res:
-                                    st.error(f"⚠️ {res}")
-                                else:
-                                    st.success(f"Para obtener **{puntos_buscados} puntos** en {prueba_tipo}:")
-                                    st.metric(label="Marca mínima necesaria", value=str(res))
+                            prueba_bonita = st.selectbox("Selecciona la prueba", list(dict_pruebas.keys()), key="p_inv_selector")
+                            p_key = dict_pruebas[prueba_bonita] # Aquí se define p_key
                             
+                            pts_obj = st.number_input("Puntos que quieres conseguir (1-100)", min_value=1, max_value=100, value=50, key="pts_inv_input") # Aquí se define pts_obj
+
+                            if st.button("Calcular Marca Necesaria"):
+                                # Llamamos a la función usando las variables que acabamos de crear arriba
+                                res = obtener_marca_inversa(baremos, p_key, sexo_sel, edad_sel, pts_obj)
+                                
+                                # Convertimos a texto para evitar el error anterior de "TypeError"
+                                res_str = str(res)
+                                
+                                if "Error" in res_str or "No hay" in res_str or "No alcanzable" in res_str:
+                                    st.warning(f"⚠️ {res_str}")
+                                else:
+                                    # Mostramos el resultado bien grande
+                                    st.success(f"Para obtener **{pts_obj} puntos** en **{prueba_bonita}** necesitas hacer:")
+                                    st.markdown(f"<h1 style='text-align: center; color: #3B441E;'>{res_str}</h1>", unsafe_allow_html=True)
+                                                            
                             st.divider()
                             st.info("💡 Datos según baremos oficiales del Ejército de Tierra.")
                 with st.expander("📍 GESTIÓN DE DESTINOS", expanded=False):
