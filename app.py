@@ -20,20 +20,27 @@ st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout
 # 2. EL AJUSTE PARA MÓVIL (Copia y pega esto aquí)
 st.markdown("""
 <style>
-    /* Esto asegura que el título del expander de la calculadora sea legible */
-    .stExpander details summary p {
-        font-size: 1.2rem !important;
-        text-transform: uppercase;
-        white-space: normal !important; /* Permite que la palabra baje si es muy larga */
-    }
-    /* Evitar que las palabras se corten en el móvil */
+    /* Arreglo para que los títulos de los botones no se corten */
     div[data-testid="stExpander"] summary p {
-        word-break: normal !important;
-        overflow-wrap: normal !important;
-        white-space: nowrap !important; /* Fuerza a que la palabra no se rompa */
-        font-size: 18px !important;    /* Bajamos un pelo el tamaño para que quepa */
+        font-size: clamp(14px, 4vw, 20px) !important; /* Tamaño adaptable */
+        white-space: normal !important;
+        line-height: 1.2 !important;
+        font-weight: bold !important;
+        color: #3B441E !important;
     }
-
+    /* Ajuste para los botones de "Gestión de..." para que quepa el texto */
+    .stElementContainer button {
+        height: auto !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+    }
+    
+    /* Forzar que el selector sea legible */
+    .stSelectbox label p {
+        color: #3B441E !important;
+        font-weight: bold !important;
+    }
+    
     /* Dar más espacio a los botones y textos */
     .stButton button {
         width: 100% !important; /* Que el botón ocupe todo el ancho para que sea fácil dar con el dedo */
@@ -466,9 +473,11 @@ with col_der:
                             # Usamos un contenedor vacío para dar espacio
                             # Si el JSON no carga bien las edades, ponemos estas por defecto para que no se quede bloqueado
                             opciones_edad = baremos.get("age_groups", ["18-24", "25-29", "30-34", "35-39", "+40"])
+                            if not opciones_edad:
+                                 opciones_edad = ["18-24", "25-29", "30-34", "35-39", "+40"]
                             edad_sel = st.selectbox("Selecciona tu Rango de Edad", opciones_edad, key="e_global")
                         
-                        st.markdown("<br>", unsafe_allow_html=True)
+                        st.divider()
 
                         # --- PESTAÑA 1: CALCULAR TOTAL (TODO DENTRO DEL BOTÓN PARA EVITAR ERRORES) ---
                         with pestana_calculo:
@@ -657,6 +666,8 @@ with col_der:
                             st.write("Listado de vacantes por méritos para Oficiales.")
                         with st.expander("🛡️ Vacantes Ordinarias"):
                             st.write("Listado de vacantes ordinarias para Oficiales.")
+                
+                
                 with st.expander("🚀 NO TE QUEDES PARADO ¡PROMOCIONA!", expanded=False):
                     st.markdown("### Elige tu objetivo de carrera")
                     
