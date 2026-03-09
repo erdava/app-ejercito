@@ -166,7 +166,12 @@ def mmss_to_seconds(t: str) -> int:
     return int(m) * 60 + int(s)
 
 def load_paef_baremos() -> dict:
-    path = Path(__file__).parent / "data" / "paef_baremos.json"
+    # Busca en la carpeta data (tu PC) o en la raíz (GitHub)
+    path_pc = Path(__file__).parent / "data" / "paef_baremos.json"
+    path_github = Path(__file__).parent / "paef_baremos.json"
+    
+    path = path_pc if path_pc.exists() else path_github
+    
     if not path.exists():
         return {"age_groups": [], "tables": {}}
     with open(path, "r", encoding="utf-8") as f:
@@ -175,19 +180,22 @@ def load_paef_baremos() -> dict:
 def puntos_flexiones(baremos, sexo, age_group, valor_input):
     try:
         num_reps = int(valor_input)
+        # IMPORTANTE: sexo aquí ya vale "Hombre" o "Mujer"
         tabla = baremos.get("tables", {}).get("flexiones", {}).get(sexo, {}).get(age_group, [])
-        if not tabla and num_reps >= 21: return 100 # Red de seguridad
         for row in sorted(tabla, key=lambda x: int(x["reps"]), reverse=True):
-            if num_reps >= int(row["reps"]): return int(row["points"])
-        return 20 if num_reps >= 9 else 0
+            if num_reps >= int(row["reps"]): 
+                return int(row["points"])
+        return 0
     except: return 0
 
 def puntos_agilidad(baremos, sexo, age_group, valor_input):
     try:
         t_usuario = float(str(valor_input).replace(',', '.'))
         tabla = baremos.get("tables", {}).get("agilidad", {}).get(sexo, {}).get(age_group, [])
+        # Menos tiempo es mejor (<=)
         for row in sorted(tabla, key=lambda x: float(x["time_sec"])):
-            if t_usuario <= float(row["time_sec"]): return int(row["points"])
+            if t_usuario <= float(row["time_sec"]): 
+                return int(row["points"])
         return 0
     except: return 0
 
@@ -195,19 +203,22 @@ def puntos_2000m(baremos, sexo, age_group, tiempo_mmss):
     try:
         t_sec = mmss_to_seconds(tiempo_mmss)
         tabla = baremos.get("tables", {}).get("carrera_2000m", {}).get(sexo, {}).get(age_group, [])
+        # Menos tiempo es mejor (<=)
         for row in sorted(tabla, key=lambda x: mmss_to_seconds(x["time_max"])):
-            if t_sec <= mmss_to_seconds(row["time_max"]): return int(row["points"])
+            if t_sec <= mmss_to_seconds(row["time_max"]): 
+                return int(row["points"])
         return 0
     except: return 0
 
 def puntos_plancha(baremos, sexo, age_group, tiempo_mmss):
     try:
         t_sec = mmss_to_seconds(tiempo_mmss)
-        # Intentamos buscar en UNISEX, si no, en el sexo elegido
         tablas_plancha = baremos.get("tables", {}).get("plancha", {})
+        # Busca en UNISEX o en el sexo correspondiente
         tabla = tablas_plancha.get("UNISEX", {}).get(age_group, []) or tablas_plancha.get(sexo, {}).get(age_group, [])
         for row in sorted(tabla, key=lambda x: mmss_to_seconds(x["time_min"]), reverse=True):
-            if t_sec >= mmss_to_seconds(row["time_min"]): return int(row["points"])
+            if t_sec >= mmss_to_seconds(row["time_min"]): 
+                return int(row["points"])
         return 0
     except: return 0
 
@@ -527,7 +538,7 @@ with col_der:
                         col_paef1, col_paef2 = st.columns(2)
                         with col_paef1: 
                             sexo_input = st.selectbox("Sexo", ["Hombre", "Mujer"], key="s_global")
-                            sexo_sel = "H" if sexo_input == "Hombre" else "M"
+                            
                         with col_paef2: 
                             # Usamos un contenedor vacío para dar espacio
                             # Si el JSON no carga bien las edades, ponemos estas por defecto para que no se quede bloqueado
