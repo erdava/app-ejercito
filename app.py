@@ -20,68 +20,81 @@ st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout
 # 2. EL AJUSTE PARA MÓVIL (Copia y pega esto aquí)
 st.markdown(f"""
     <style>
-    /* 1. QUITAR MENÚS Y CABECERAS */
+    /* 1. QUITAR MENÚS INNECESARIOS */
     [data-testid="stSidebar"], [data-testid="stSidebarNav"], .stSidebar {{display: none !important;}}
     button[kind="header"] {{display: none !important;}}
     header {{visibility: hidden !important;}}
 
-    /* 2. SOLUCIÓN DEFINITIVA FONDO FIJO (PC Y MÓVIL) */
+    /* 2. SOLUCIÓN COMPLETA PARA FONDO FIJO EN MÓVIL Y PC */
     .stApp {{
-        background: none !important;
+        background: none !important; /* Limpiamos el fondo original */
     }}
     
-    .stApp::before {{
+    /* Capa fantasma clavada al fondo con la imagen */
+    .stApp::before {
         content: "";
         position: fixed;
-        top: 0; left: 0; width: 100vw; height: 100vh;
+        top: 0; left: 0;
+        width: 100vw; 
+        height: 100vh;
         z-index: -1;
         background: 
             linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
             url("data:image/jpeg;base64,{bin_str}");
-        background-size: cover !important;
-        background-position: center !important;
+        
+        /* ESTO ES LO QUE HACE LA MAGIA */
+        background-size: cover !important; /* Cubre toda la pantalla sin deformar */
+        background-position: center center !important; /* Centra la imagen siempre */
         background-repeat: no-repeat !important;
+    }
+
+    /* 3. BLINDAJE ANTI MODO NOCHE DE IPHONE (IMPORTANTE) */
+    /* Esta regla anula cualquier cambio de color que el móvil intente hacer */
+    @media (prefers-color-scheme: dark) {{
+        .stExpander, html, body, [data-testid="stExpander"] {{
+            background-color: white !important; /* Forzamos blanco */
+            color: #3B441E !important; /* Forzamos verde oliva */
+        }}
     }}
 
-    /* 3. PROHIBIDO CORTAR PALABRAS */
+    /* 4. REGLA DE ORO: PROHIBIDO CORTAR PALABRAS */
     div[data-testid="stExpander"] summary p, 
     .stButton button, h1, h2, h3, label {{
-        hyphens: none !important;
-        word-break: keep-all !important;
+        hyphens: none !important; /* Cero guiones de corte */
+        word-break: keep-all !important; /* Mantener la palabra unida */
         overflow-wrap: normal !important;
         white-space: normal !important;
-        text-wrap: balance !important;
+        text-wrap: balance !important; /* Equilibra el texto en dos líneas */
     }}
 
-    /* 4. TÍTULOS DE LOS EXPANDERS (Letras blancas para que se vean) */
+    /* 5. AJUSTE DE TÍTULOS DE LOS EXPANDERS */
     div[data-testid="stExpander"] summary p {{
-        color: white !important; /* CAMBIADO A BLANCO PARA QUE SE VEA BIEN */
+        color: #3B441E !important;
         font-weight: bold !important;
-        font-size: clamp(12px, 3.5vw, 16px) !important;
-        line-height: 1.2 !important;
+        /* Tamaño adaptable: un poco más pequeño en móvil para que quepa 'CONVOCATORIA' */
+        font-size: clamp(12px, 3.5vw, 17px) !important; 
+        line-height: 1.1 !important;
         text-align: center !important;
     }}
 
-    /* 5. ESTILO DE LAS TARJETAS */
+    /* 6. ESTILO DE LAS TARJETAS (Cajas blancas blindadas) */
     .stExpander {{
         border: 2px solid #556b2f !important;
         border-radius: 15px !important;
-        background-color: rgba(255, 255, 255, 0.1) !important; /* Fondo translúcido militar */
-        backdrop-filter: blur(10px); /* Efecto cristal para que se vea la foto detrás */
+        background-color: white !important; /* Blanco sólido forzado */
         box-shadow: 0px 4px 15px rgba(0,0,0,0.5) !important;
         margin-bottom: 20px !important;
     }}
 
-    /* 6. BOTONES */
+    /* 7. BOTONES GRANDES */
     .stButton button {{
         width: 100% !important;
         min-height: 60px !important;
-        background-color: #556b2f !important; /* Verde militar */
-        color: white !important;
-        border-radius: 10px !important;
+        height: auto !important;
+        font-weight: bold !important;
     }}
 
-    /* 7. BANDERA SUPERIOR */
+    /* 8. BANDERA DE ESPAÑA SUPERIOR */
     header::after {{
         content: "";
         position: fixed;
