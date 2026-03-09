@@ -20,6 +20,24 @@ st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout
 # 2. EL AJUSTE PARA MÓVIL (Copia y pega esto aquí)
 st.markdown("""
 <style>
+    /* Esto asegura que el título del expander de la calculadora sea legible */
+    .stExpander details summary p {
+        font-size: 1.2rem !important;
+        text-transform: uppercase;
+        white-space: normal !important; /* Permite que la palabra baje si es muy larga */
+    }
+    /* Evitar que las palabras se corten en el móvil */
+    div[data-testid="stExpander"] summary p {
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        white-space: nowrap !important; /* Fuerza a que la palabra no se rompa */
+        font-size: 18px !important;    /* Bajamos un pelo el tamaño para que quepa */
+    }
+
+    /* Dar más espacio a los botones y textos */
+    .stButton button {
+        width: 100% !important; /* Que el botón ocupe todo el ancho para que sea fácil dar con el dedo */
+    }
     /* Si la pantalla es pequeña (móvil) */
     @media (max-width: 800px) {
         .titulo-top-gun, h1 {
@@ -50,11 +68,22 @@ st.markdown(f"""
     /* 2. TU FOTO DE FONDO (INCRUSTADA) */
     .stApp {{
         background: 
-            linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), 
+            linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
             url("data:image/jpeg;base64,{bin_str}");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
+        background-size: cover !important;
+        background-position: center !important;
+        background-attachment: fixed !important;
+    }}
+
+    /* ESTO ARREGLA LAS LETRAS INVISIBLES EN MÓVIL */
+    div[data-testid="stExpander"] summary p {{
+        color: white !important;
+        font-weight: bold !important;
+    }}
+
+    div[data-testid="stExpander"] div[role="region"] p, 
+    div[data-testid="stExpander"] div[role="region"] li {{
+        color: #f0f0f0 !important;
     }}
 
     /* 3. BANDERA DE ESPAÑA SUPERIOR */
@@ -138,9 +167,8 @@ def puntos_plancha(baremos, sexo, age_group, tiempo_mmss):
     except: return 0
 
 # --- CUERPO PRINCIPAL (ESTRUCTURA DE BLOQUES) ---
-# --- CABECERA DEFINITIVA (BORRA LA ANTERIOR) ---
-st.write(f'<div style="display: flex; align-items: center; justify-content: center; gap: 30px;"><h1 style="font-size: 120px; font-family: Oswald, sans-serif; font-weight: 900; margin: 0; background: linear-gradient(to bottom, #bf9b30 0%, #f2d87e 50%, #bf9b30 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(4px 4px 0px #FF0000) drop-shadow(8px 8px 15px black); text-transform: uppercase; line-height: 1;">SOMOS TU EJÉRCITO</h1></div>', unsafe_allow_html=True)
 
+st.write(f'<div style="display: flex; align-items: center; justify-content: center; gap: 30px;"><h1 style="font-size: clamp(40px, 8vw, 120px); font-family: Oswald, sans-serif; font-weight: 900; margin: 0; background: linear-gradient(to bottom, #bf9b30 0%, #f2d87e 50%, #bf9b30 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(4px 4px 0px #FF0000); text-transform: uppercase; line-height: 1.1; text-align: center;">SOMOS TU EJÉRCITO</h1></div>', unsafe_allow_html=True)
 col_izq, col_der = st.columns(2)
 
 # BLOQUE IZQUIERDO: ACCESO
@@ -430,9 +458,17 @@ with col_der:
                         baremos = load_paef_baremos() # Tu función de carga de JSON
                         
                         # Selectores comunes
-                        c1, c2 = st.columns(2)
-                        with c1: sexo_sel = st.selectbox("Sexo", ["Hombre", "Mujer"], key="s_global")
-                        with c2: edad_sel = st.selectbox("Bloque de edad", baremos.get("age_groups", []), key="e_global")
+                        col_paef1, col_paef2 = st.columns(2)
+                        with col_paef1: 
+                            sexo_input = st.selectbox("Sexo", ["Hombre", "Mujer"], key="s_global")
+                            sexo_sel = "H" if sexo_input == "Hombre" else "M"
+                        with col_paef2: 
+                            # Usamos un contenedor vacío para dar espacio
+                            # Si el JSON no carga bien las edades, ponemos estas por defecto para que no se quede bloqueado
+                            opciones_edad = baremos.get("age_groups", ["18-24", "25-29", "30-34", "35-39", "+40"])
+                            edad_sel = st.selectbox("Selecciona tu Rango de Edad", opciones_edad, key="e_global")
+                        
+                        st.markdown("<br>", unsafe_allow_html=True)
 
                         # --- PESTAÑA 1: CALCULAR TOTAL (TODO DENTRO DEL BOTÓN PARA EVITAR ERRORES) ---
                         with pestana_calculo:
