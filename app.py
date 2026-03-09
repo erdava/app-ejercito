@@ -537,7 +537,7 @@ with col_der:
                         # Selectores comunes
                         col_paef1, col_paef2 = st.columns(2)
                         with col_paef1: 
-                            sexo_input = st.selectbox("Sexo", ["Hombre", "Mujer"], key="s_global")
+                            sexo_sel = st.selectbox("Sexo", ["Hombre", "Mujer"], key="s_global")
                             
                         with col_paef2: 
                             # Usamos un contenedor vacío para dar espacio
@@ -545,7 +545,7 @@ with col_der:
                             opciones_edad = baremos.get("age_groups", ["17-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-59", "60+"])
                             if not opciones_edad:
                                  opciones_edad = ["17-25", "26-30", "31-35", "36-40", "41-45", "46-50", "51-55", "56-59", "60+"]
-                            edad_sel = st.selectbox("Selecciona tu Rango de Edad", opciones_edad, key="e_global")
+                                 edad_sel = st.selectbox("Selecciona tu Rango de Edad", opciones_edad, key="e_global")
                         
                         st.divider()
 
