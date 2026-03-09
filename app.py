@@ -20,19 +20,18 @@ st.set_page_config(page_title="App Ejército 2026", page_icon="🇪🇸", layout
 # 2. EL AJUSTE PARA MÓVIL (Copia y pega esto aquí)
 st.markdown(f"""
     <style>
-    /* 1. QUITAR MENÚS INNECESARIOS */
+    /* 1. QUITAR MENÚS */
     [data-testid="stSidebar"], [data-testid="stSidebarNav"], .stSidebar {{display: none !important;}}
     button[kind="header"] {{display: none !important;}}
     header {{visibility: hidden !important;}}
 
-    /* 2. SOLUCIÓN COMPLETA PARA FONDO FIJO EN MÓVIL Y PC */
+    /* 2. EL FONDO QUE SE AJUSTA AUTOMÁTICAMENTE */
     .stApp {{
-        background: none !important; /* Limpiamos el fondo original */
+        background: none !important;
     }}
     
-    /* Capa fantasma clavada al fondo con la imagen */
-    .stApp::before {
-        content: "";
+    .stApp::before {{
+        content: "";  /* <--- AQUÍ ES DONDE DABA EL ERROR ANTES */
         position: fixed;
         top: 0; left: 0;
         width: 100vw; 
@@ -42,11 +41,11 @@ st.markdown(f"""
             linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
             url("data:image/jpeg;base64,{bin_str}");
         
-        /* ESTO ES LO QUE HACE LA MAGIA */
-        background-size: cover !important; /* Cubre toda la pantalla sin deformar */
-        background-position: center center !important; /* Centra la imagen siempre */
+        /* AJUSTE AUTOMÁTICO PARA MÓVIL Y PC */
+        background-size: cover !important; 
+        background-position: center center !important;
         background-repeat: no-repeat !important;
-    }
+    }}
 
     /* 3. BLINDAJE ANTI MODO NOCHE DE IPHONE (IMPORTANTE) */
     /* Esta regla anula cualquier cambio de color que el móvil intente hacer */
